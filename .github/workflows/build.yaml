@@ -2,7 +2,6 @@ name: Build Plugin
 
 on:
    push:
-   push:
       branches:
          - main
    pull_request:
