@@ -1,6 +1,6 @@
 # IntelliJ plugin
 
-Make sure you have at least a JDK 17 installed on your machine and that the
+Make sure you have at least a JDK 21 installed on your machine and that the
 `JAVA_HOME` variable points to the JDK's home directory.
 
 ## How to run locally (without IDE)
