@@ -30,8 +30,8 @@ jobs:
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
-              tag_name: ethersync-jetbrains-nightly
-              release_name: Nightly Release ${{ env.TAG_NAME }}
+              tag_name: nightly
+              release_name: Ethersync Jetbrains Nightly
               body_path: ./build/distributions/ethersync-0.7.0-SNAPSHOT.zip
               keep_num: 0
               keep_tags: false
