@@ -25,8 +25,12 @@ jobs:
          - name: Execute Gradle build
            run: ./gradlew buildPlugin
 
-         - uses: actions/upload-artifact@v4
+         - name: Deploy ethersync main
+           uses: WebFreak001/deploy-nightly@v3.1.0
            with:
-               name: ethersync-plugin
-               path: build/distributions/ethersync-*.zip
-               compression-level: 0
+               upload_url: https://uploads.github.com/repos/ethersync/ethersync-jetbrains/releases/1/assets{?name,label}
+               release_id: 1
+               asset_path: ./build/distributions/ethersync-*.zip
+               asset_name: ethersync-jetbrains-nightly-$$.zip
+               asset_content_type: application/zip
+               ignore_hash: true
