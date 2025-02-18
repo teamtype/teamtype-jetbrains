@@ -27,9 +27,11 @@ jobs:
          - name: Create nightly release
            id: create_release
            uses: viperproject/create-nightly-release@v1
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            with:
-             tag_name: ethersync-jetbrains-nightly
-             release_name: Nightly Release ${{ env.TAG_NAME }}
-             body_path: ./build/distributions/ethersync-*.zip
-             keep_num: 0
-             keep_tags: false
+              tag_name: ethersync-jetbrains-nightly
+              release_name: Nightly Release ${{ env.TAG_NAME }}
+              body_path: ./build/distributions/ethersync-*.zip
+              keep_num: 0
+              keep_tags: false
