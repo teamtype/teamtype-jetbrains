@@ -24,11 +24,12 @@ jobs:
          - name: Execute Gradle build
            run: ./gradlew buildPlugin
 
-         - name: Deploy ethersync main
-           uses: WebFreak001/deploy-nightly@v3.1.0
+         - name: Create nightly release
+           id: create_release
+           uses: viperproject/create-nightly-release@v1
            with:
-               upload_url: https://uploads.github.com/repos/ethersync/ethersync-jetbrains/releases/1/assets{?name,label}
-               release_id: 1
-               asset_path: ./build/distributions/ethersync-*.zip
-               asset_name: ethersync-jetbrains-nightly-$$.zip
-               asset_content_type: application/zip
+             tag_name: ethersync-jetbrains-nightly
+             release_name: Nightly Release ${{ env.TAG_NAME }}
+             body_path: ./build/distributions/ethersync-*.zip
+             keep_num: 0
+             keep_tags: false
