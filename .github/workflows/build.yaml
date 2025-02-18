@@ -4,7 +4,6 @@ on:
    push:
       branches:
          - main
-   pull_request:
 
 jobs:
    gradle:
@@ -33,4 +32,3 @@ jobs:
                asset_path: ./build/distributions/ethersync-*.zip
                asset_name: ethersync-jetbrains-nightly-$$.zip
                asset_content_type: application/zip
-               ignore_hash: true
