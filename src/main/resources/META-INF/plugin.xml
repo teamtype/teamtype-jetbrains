@@ -26,11 +26,12 @@
 
       <toolWindow
            id="ethersync"
-           icon="io.github.ethersync.Icons.PluginIcon"
+           icon="/toolbar.svg"
            factoryClass="io.github.ethersync.EthersyncToolWindowFactory"/>
 
       <terminal.shellCommandHandler
            implementation="io.github.ethersync.StartEthersyncDaemonTerminalShellCommandHandler"/>
+      <iconMapper mappingFile="EthersyncIconMappings.json"/>
    </extensions>
 
    <actions>
@@ -39,7 +40,7 @@
          class="io.github.ethersync.StartEthersyncDaemonAction"
          text="Code with Ethersync"
          description="Connect to a running ethersync daemon or start a new peer"
-         icon="io.github.ethersync.Icons.PluginIcon">
+         icon="/toolbar.svg">
          <add-to-group group-id="ToolsMenu" anchor="first"/>
       </action>
    </actions>
