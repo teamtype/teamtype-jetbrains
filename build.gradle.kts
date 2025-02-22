@@ -29,13 +29,13 @@ dependencies {
 
 kotlin {
    compilerOptions {
-      jvmToolchain(17)
+      jvmToolchain(21)
    }
 }
 
 tasks {
    patchPluginXml {
-      sinceBuild.set("232")
+      sinceBuild.set("243")
    }
 
    signPlugin {
