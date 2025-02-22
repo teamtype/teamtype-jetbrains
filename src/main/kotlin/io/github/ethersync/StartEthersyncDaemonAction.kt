@@ -14,7 +14,7 @@ class StartEthersyncDaemonAction : AnAction() {
          project,
          "Provide ethersync peer address. Leave empty if you want to host a new session.",
          "Peer Address",
-         Icons.PluginIcon
+         Icons.ToolbarIcon
       )
 
       if (address != null) {
