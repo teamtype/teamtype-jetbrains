@@ -4,7 +4,6 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
-import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.logger
@@ -26,6 +25,7 @@ import io.github.ethersync.protocol.*
 import io.github.ethersync.settings.AppSettings
 import io.github.ethersync.sync.Changetracker
 import io.github.ethersync.sync.Cursortracker
+import io.github.ethersync.ui.ToolWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -193,11 +193,10 @@ class EthersyncServiceImpl(
                }
             })
 
-
             val tw = ToolWindowManager.getInstance(project).getToolWindow("ethersync")!!
-            val console = tw.contentManager.findContent("Daemon")!!.component
-            if (console is ConsoleView) {
-               console.attachToProcess(daemonProcess!!)
+            val toolWindow = tw.contentManager.findContent("Daemon")!!.component
+            if (toolWindow is ToolWindow) {
+               toolWindow.attachToProcess(daemonProcess!!)
             }
 
             tw.show()

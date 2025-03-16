@@ -27,7 +27,7 @@
       <toolWindow
            id="ethersync"
            icon="/toolbar.svg"
-           factoryClass="io.github.ethersync.EthersyncToolWindowFactory"/>
+           factoryClass="io.github.ethersync.ui.EthersyncToolWindowFactory"/>
 
       <terminal.shellCommandHandler
            implementation="io.github.ethersync.StartEthersyncDaemonTerminalShellCommandHandler"/>
