@@ -5,6 +5,7 @@ import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.ui.ConsoleView
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
@@ -15,7 +16,6 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
@@ -27,7 +27,9 @@ import io.github.ethersync.settings.AppSettings
 import io.github.ethersync.sync.Changetracker
 import io.github.ethersync.sync.Cursortracker
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import java.io.BufferedReader
@@ -99,14 +101,18 @@ class EthersyncServiceImpl(
 
       ProjectManager.getInstance().addProjectManagerListener(project, object: ProjectManagerListener {
          override fun projectClosingBeforeSave(project: Project) {
-            cs.launch {
-               shutdown()
-            }
+            shutdown()
          }
       })
    }
 
-   suspend fun shutdown() {
+   override fun shutdown() {
+      cs.launch {
+         shutdownImpl()
+      }
+   }
+
+   private suspend fun shutdownImpl() {
       clientProcess?.let {
          it.destroy()
          it.awaitExit()
@@ -165,14 +171,14 @@ class EthersyncServiceImpl(
       }
 
       cs.launch {
-         shutdown()
+         shutdownImpl()
 
          if (!ethersyncDirectory.exists()) {
             LOG.debug("Creating ethersync directory")
             ethersyncDirectory.mkdir()
          }
 
-         withUiContext {
+         withContext(Dispatchers.EDT) {
             daemonProcess = ColoredProcessHandler(cmd)
 
             daemonProcess!!.addProcessListener(object : ProcessListener {
@@ -183,15 +189,13 @@ class EthersyncServiceImpl(
                }
 
                override fun processTerminated(event: ProcessEvent) {
-                  cs.launch {
-                     shutdown()
-                  }
+                  shutdown()
                }
             })
 
 
             val tw = ToolWindowManager.getInstance(project).getToolWindow("ethersync")!!
-            val console =  tw.contentManager.findContent("Daemon")!!.component
+            val console = tw.contentManager.findContent("Daemon")!!.component
             if (console is ConsoleView) {
                console.attachToProcess(daemonProcess!!)
             }
