@@ -1,6 +1,8 @@
 package io.github.ethersync.sync
 
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LogicalPosition
+import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.markup.*
@@ -18,6 +20,8 @@ import kotlinx.coroutines.launch
 import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.Range
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
+import java.awt.Graphics
+import java.awt.Graphics2D
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -54,7 +58,7 @@ class Cursortracker(
                }
 
                val newHighlighter = LinkedList<RangeHighlighter>()
-               for(range in cursorEvent.ranges) {
+               for((i, range) in cursorEvent.ranges.withIndex()) {
                   val startPosition = editor.logicalPositionToOffset(LogicalPosition(range.start.line, range.start.character))
                   val endPosition = editor.logicalPositionToOffset(LogicalPosition(range.end.line, range.end.character))
 
@@ -68,9 +72,29 @@ class Cursortracker(
                      HighlighterLayer.ADDITIONAL_SYNTAX,
                      textAttributes,
                      HighlighterTargetArea.EXACT_RANGE
-                  )
-                  if (cursorEvent.name != null) {
-                     hl.errorStripeTooltip = cursorEvent.name
+                  ).apply {
+                     customRenderer = object : CustomHighlighterRenderer {
+                        override fun paint(editor: Editor, rl: RangeHighlighter, g: Graphics) {
+                           if (i > 0) {
+                              return
+                           }
+
+                           if (g is Graphics2D) {
+                              val position = editor.offsetToVisualPosition(rl.endOffset)
+                              val endOfLineOffset = editor.document.getLineEndOffset(position.line)
+                              val endOfLinePosition = editor.offsetToVisualPosition(endOfLineOffset)
+                              val endOfLineVisualPosition = editor.visualPositionToXY(endOfLinePosition)
+
+                              val font = editor.colorsScheme.getFont(EditorFontType.PLAIN);
+                              g.font = font
+
+                              val metrics = g.getFontMetrics(font)
+                              val bounds = metrics.getStringBounds(cursorEvent.name, g)
+
+                              g.drawString(cursorEvent.name, endOfLineVisualPosition.x + 10f, endOfLineVisualPosition.y + bounds.height.toFloat())
+                           }
+                        }
+                     }
                   }
 
                   newHighlighter.add(hl)

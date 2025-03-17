@@ -1,10 +1,13 @@
 .gradle
 .intellijPlatform/
+.kotlin/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 kls_database.db
+
+.ethersync/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
