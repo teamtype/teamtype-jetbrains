@@ -12,7 +12,7 @@ download] and this ZIP can be installed into the Jetbrains product from disk
 
 # Development
 
-The development instructions can be found [here](DEVELOPMENT.MD).
+The development instructions can be found [here](DEVELOPMENT.md).
 
 [nightly download]: https://github.com/ethersync/ethersync-jetbrains/releases/tag/nightly
 [install from disk]: https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk
