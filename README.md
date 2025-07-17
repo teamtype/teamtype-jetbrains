@@ -3,12 +3,15 @@
 This project provides a plugin that supports the Ethersync synchronization for
 Jetbrains IDEs. For example, IntelliJ will get a Google Docs like experience
 while the with whom you are working use their favorite editor, e.g. Neovim or
-VSCode.
+VSCode. Here is a short demo:
+
+[![Watch the demo](Demo-thumbnail.png)](Demo.mp4)
 
 Currently, the project is in development but the pre-release version of the
 plugin can be installed by downloading the latest ZIP from [here][nightly
 download] and this ZIP can be installed into the Jetbrains product from disk
-(see [install from disk] instructions for IntelliJ).
+(see [install from disk] instructions for IntelliJ). Please note, that this
+version currently only supports Ethersync 0.6.
 
 # Development
 
