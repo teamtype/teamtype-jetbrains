@@ -5,7 +5,7 @@ Jetbrains IDEs. For example, IntelliJ will get a Google Docs like experience
 while the with whom you are working use their favorite editor, e.g. Neovim or
 VSCode. Here is a short demo:
 
-[![Watch the demo](Demo-thumbnail.png)](Demo.mp4)
+[![Watch the demo](Demo-thumbnail.png)](https://github.com/ethersync/ethersync-jetbrains/raw/refs/heads/main/Demo.mp4)
 
 Currently, the project is in development but the pre-release version of the
 plugin can be installed by downloading the latest ZIP from [here][nightly
