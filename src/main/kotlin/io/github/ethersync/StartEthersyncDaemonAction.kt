@@ -11,17 +11,17 @@ class StartEthersyncDaemonAction : AnAction("Connect to peer", "Connect to a run
 
    override fun actionPerformed(e: AnActionEvent) {
       val project = e.project ?: return
-      val address = Messages.showInputDialog(
+      val joinCode = Messages.showInputDialog(
          project,
-         "Provide ethersync peer address. Leave empty if you want to host a new session.",
-         "Peer Address",
+         "Provide ethersync join code. Leave empty if you want to host a new session.",
+         "Join Code",
          Icons.ToolbarIcon
       )
 
-      if (address != null) {
+      if (joinCode != null) {
          val service = project.service<EthersyncService>()
 
-         service.start(address)
+         service.start(joinCode)
       }
    }
 }

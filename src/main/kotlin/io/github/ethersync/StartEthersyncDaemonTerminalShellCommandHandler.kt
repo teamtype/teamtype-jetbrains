@@ -14,17 +14,19 @@ class StartEthersyncDaemonTerminalShellCommandHandler : TerminalShellCommandHand
         command: String,
         executor: Executor
     ): Boolean {
-        workingDirectory?.let {
-            if (project.basePath != it) {
-                return false
-            }
-        }
         val ethersyncService = project.service<EthersyncService>()
         ethersyncService.startWithCustomCommandLine(command)
         return true
     }
 
     override fun matches(project: Project, workingDirectory: String?, localSession: Boolean, command: String): Boolean {
+        if (workingDirectory == null) {
+           return false
+        }
+        else if (project.basePath != workingDirectory) {
+           return false
+        }
+
         val ethersyncBinary = AppSettings.getInstance().state.ethersyncBinaryPath
 
         if (!command.startsWith(ethersyncBinary)) {
@@ -33,6 +35,6 @@ class StartEthersyncDaemonTerminalShellCommandHandler : TerminalShellCommandHand
 
         val rest = command.substring(ethersyncBinary.length).trim()
 
-        return rest.startsWith("daemon")
+        return rest.startsWith("share") || rest.startsWith("join")
     }
 }

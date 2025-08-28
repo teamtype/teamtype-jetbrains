@@ -35,6 +35,8 @@ import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import java.util.concurrent.Executors
 
 private val LOG = logger<EthersyncServiceImpl>()
@@ -128,20 +130,16 @@ class EthersyncServiceImpl(
       cursortracker.clear()
    }
 
-   override fun start(peer: String?) {
-      val socket = "ethersync-%s-socket".format(project.name)
-
+   override fun start(joinCode: String?) {
       val cmd = GeneralCommandLine(AppSettings.getInstance().state.ethersyncBinaryPath)
 
-      cmd.addParameter("daemon")
-      peer?.let {
-         if (peer.isNotBlank()) {
-            cmd.addParameter("--peer")
-            cmd.addParameter(peer)
-         }
+      if (joinCode == null || joinCode.trim().isEmpty()) {
+         cmd.addParameter("share")
       }
-      cmd.addParameter("--socket-name")
-      cmd.addParameter(socket)
+      else {
+         cmd.addParameter("join")
+         cmd.addParameter(joinCode.trim())
+      }
 
       launchDaemon(cmd)
    }
@@ -158,24 +156,13 @@ class EthersyncServiceImpl(
       val ethersyncDirectory = File(projectDirectory, ".ethersync")
       cmd.workDirectory = projectDirectory
 
-      var socket: String? = null
-      if (cmd.parametersList.hasParameter("--socket-name") || cmd.parametersList.hasParameter("-s")) {
-         for (i in 0..(cmd.parametersList.parametersCount - 1)) {
-            val name = cmd.parametersList[i]
-
-            if (name == "--socket-name" || name == "-s") {
-               socket = cmd.parametersList[i + 1]
-               break
-            }
-         }
-      }
-
       cs.launch {
          shutdownImpl()
 
          if (!ethersyncDirectory.exists()) {
             LOG.debug("Creating ethersync directory")
-            ethersyncDirectory.mkdir()
+            val permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+            Files.createDirectory(ethersyncDirectory.toPath(), permissions);
          }
 
          withContext(Dispatchers.EDT) {
@@ -183,8 +170,8 @@ class EthersyncServiceImpl(
 
             daemonProcess!!.addProcessListener(object : ProcessListener {
                override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                  if (event.text.contains("Others can connect with")) {
-                     launchEthersyncClient(socket, projectDirectory)
+                  if (event.text.contains("One other person can use this to connect to you") || event.text.contains("Connected to peer:")) {
+                     launchEthersyncClient(projectDirectory)
                   }
                }
 
@@ -221,26 +208,15 @@ class EthersyncServiceImpl(
       }
    }
 
-   private fun launchEthersyncClient(socket: String?, projectDirectory: File) {
+   private fun launchEthersyncClient(projectDirectory: File) {
       if (clientProcess != null) {
          return
       }
 
       cs.launch {
-         val cmd = GeneralCommandLine(AppSettings.getInstance().state.ethersyncBinaryPath)
-         cmd.workDirectory = projectDirectory
-         cmd.addParameter("client")
-
-         socket?.let {
-            cmd.addParameter("--socket-name")
-            cmd.addParameter(it)
-         }
-
          LOG.info("Starting ethersync client")
          // TODO: try catch not existing binary
-         val clientProcessBuilder = ProcessBuilder(
-            AppSettings.getInstance().state.ethersyncBinaryPath,
-            "client", "--socket-name", socket)
+         val clientProcessBuilder = ProcessBuilder(AppSettings.getInstance().state.ethersyncBinaryPath, "client")
                .directory(projectDirectory)
          clientProcess = clientProcessBuilder.start()
          val clientProcess = clientProcess!!
