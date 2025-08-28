@@ -21,9 +21,5 @@ Just open the project and use “Run Plugin” in the run drop down.
 ## Develop with Neovim
 
 - Make sure to enable [`kotlin_language_server` from nvim-lspconfig][nvim-kls].
-- Overwrite `cmd` by following [this fix][kls-fix] ([use the new Kotlin language server][community-kls]
-  because this language server is better maintained works with this plugin)
 
 [nvim-kls]: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#kotlin_language_server
-[kls-fix]: https://github.com/fwcd/kotlin-language-server/issues/600#issuecomment-2471327399
-[community-kls]: https://github.com/kotlin-community-tools/kotlin-language-server
