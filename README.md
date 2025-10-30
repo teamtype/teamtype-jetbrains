@@ -11,7 +11,7 @@ Currently, the project is in development but the pre-release version of the
 plugin can be installed by downloading the latest ZIP from [here][nightly
 download] and this ZIP can be installed into the Jetbrains product from disk
 (see [install from disk] instructions for IntelliJ). Please note, that this
-version currently only supports Ethersync 0.6.
+version currently only supports Ethersync 0.8.
 
 # Development
 
