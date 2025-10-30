@@ -9,12 +9,12 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.refactoring.suggested.oldRange
-import com.intellij.util.io.await
 import io.github.ethersync.protocol.Delta
 import io.github.ethersync.protocol.EditEvent
 import io.github.ethersync.protocol.EditRequest
 import io.github.ethersync.protocol.RemoteEthersyncClientProtocol
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.Range
@@ -54,7 +54,7 @@ class Changetracker(
       val editor = fileEditor.editor
       val uri = file.canonicalFile!!.url
 
-      val rev = revisions[uri]!!
+      val rev = revisions.getOrDefault(uri, FileRevision())
       rev.editor += 1u
 
       val start = editor.offsetToLogicalPosition(event.oldRange.startOffset)
@@ -108,10 +108,6 @@ class Changetracker(
          revision.daemon += 1u
 
       }
-   }
-
-   fun openFile(fileUri: String) {
-      revisions[fileUri] = FileRevision();
    }
 
    fun closeFile(fileUri: String) {
