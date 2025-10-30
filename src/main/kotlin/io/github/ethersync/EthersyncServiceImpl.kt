@@ -21,6 +21,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.io.await
 import com.intellij.util.io.awaitExit
 import com.intellij.util.io.readLineAsync
+import com.intellij.util.io.BaseOutputReader
 import io.github.ethersync.protocol.*
 import io.github.ethersync.settings.AppSettings
 import io.github.ethersync.sync.Changetracker
@@ -167,7 +168,11 @@ class EthersyncServiceImpl(
          }
 
          withContext(Dispatchers.EDT) {
-            daemonProcess = ColoredProcessHandler(cmd)
+            daemonProcess = object : ColoredProcessHandler(cmd) {
+               override fun readerOptions(): BaseOutputReader.Options {
+                  return BaseOutputReader.Options.forMostlySilentProcess()
+               }
+            }
 
             daemonProcess!!.addProcessListener(object : ProcessListener {
                override fun startNotified(event: ProcessEvent) {
