@@ -12,10 +12,10 @@ import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.fileEditor.impl.LoadTextUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.io.await
@@ -59,7 +59,8 @@ class EthersyncServiceImpl(
       bus.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
          override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
             val canonicalFile = file.canonicalFile ?: return
-            launchDocumentOpenRequest(canonicalFile.url)
+            val content = LoadTextUtil.loadText(file).toString()
+            launchDocumentOpenRequest(canonicalFile.url, content)
          }
 
          override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
@@ -169,8 +170,12 @@ class EthersyncServiceImpl(
             daemonProcess = ColoredProcessHandler(cmd)
 
             daemonProcess!!.addProcessListener(object : ProcessListener {
-               override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-                  if (event.text.contains("One other person can use this to connect to you") || event.text.contains("Connected to peer:")) {
+               override fun startNotified(event: ProcessEvent) {
+                  cs.launch {
+                     val ethersyncSocket = File(ethersyncDirectory, "socket").toPath()
+                     while (!Files.exists(ethersyncSocket)) {
+                        Thread.sleep(100)
+                     }
                      launchEthersyncClient(projectDirectory)
                   }
                }
@@ -238,7 +243,8 @@ class EthersyncServiceImpl(
 
          val fileEditorManager = FileEditorManager.getInstance(project)
          for (file in fileEditorManager.openFiles) {
-            launchDocumentOpenRequest(file.canonicalFile!!.url)
+            val content = LoadTextUtil.loadText(file).toString()
+            launchDocumentOpenRequest(file.canonicalFile!!.url, content)
          }
 
          clientProcess.awaitExit()
@@ -261,17 +267,16 @@ class EthersyncServiceImpl(
    fun launchDocumentCloseNotification(fileUri: String) {
       val launcher = launcher ?: return
       cs.launch {
-         launcher.remoteProxy.close(DocumentRequest(fileUri))
+         launcher.remoteProxy.close(DocumentCloseRequest(fileUri))
          changetracker.closeFile(fileUri)
       }
    }
 
-   fun launchDocumentOpenRequest(fileUri: String) {
+   fun launchDocumentOpenRequest(fileUri: String, content: String) {
       val launcher = launcher ?: return
       cs.launch {
          try {
-            changetracker.openFile(fileUri)
-            launcher.remoteProxy.open(DocumentRequest(fileUri)).await()
+            launcher.remoteProxy.open(DocumentOpenRequest(fileUri, content)).await()
          } catch (e: ResponseErrorException) {
             TODO("not yet implemented: notify about an protocol error")
          }
