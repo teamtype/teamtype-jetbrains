@@ -26,10 +26,9 @@ jobs:
 
          - name: Create nightly release
            id: create_release
-           uses: pyTooling/Actions/releaser@r0
+           uses: softprops/action-gh-release@v2
            with:
-              token: ${{ secrets.GITHUB_TOKEN }}
               files: |
                   ./build/distributions/ethersync-0.7.0-SNAPSHOT.zip
-              tag: nightly
-              rm: true
+              tag_name: nightly
+              prerelease: true
