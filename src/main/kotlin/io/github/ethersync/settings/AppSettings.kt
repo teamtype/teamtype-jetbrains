@@ -14,7 +14,7 @@ class AppSettings : PersistentStateComponent<AppSettings.State> {
 
    data class State(
       @NonNls
-      var ethersyncBinaryPath: String = "ethersync"
+      var ethersyncBinaryPath: String = "teamtype"
    )
 
    private var state: State = State()

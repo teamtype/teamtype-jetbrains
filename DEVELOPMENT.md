@@ -8,6 +8,14 @@ Make sure you have at least a JDK 21 installed on your machine and that the
 `./gradlew runIde --no-daemon` directly builds & starts a sandboxed IntelliJ
 IDEA with the plugin enabled.
 
+Testing is currently in the beginning and there is exists some issue in the
+`HeavyPlatfromTestCase` so one has to manually run tests in isolation:
+
+```bash
+./gradlew test --info --rerun --tests EthersyncServiceImplTest.test01SyncChangesFromRemoteProjectToJetbrains
+./gradlew test --info --rerun --tests EthersyncServiceImplTest.test02SyncChangesFromJetbrainsToRemoteProject
+```
+
 ## Install into existing IDE
 
 `./gradlew buildPlugin` creates in `build/distributions/` a ZIP archive that
