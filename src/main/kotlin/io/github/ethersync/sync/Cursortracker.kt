@@ -1,5 +1,6 @@
 package io.github.ethersync.sync
 
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.colors.EditorFontType
@@ -16,7 +17,9 @@ import io.github.ethersync.protocol.CursorEvent
 import io.github.ethersync.protocol.CursorRequest
 import io.github.ethersync.protocol.RemoteEthersyncClientProtocol
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.Range
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
@@ -132,7 +135,12 @@ class Cursortracker(
 
    suspend fun clear() {
       remoteProxy = null
-      withUiContext {
+      synchronized(highlighter) {
+         if (highlighter.isEmpty()) {
+            return
+         }
+      }
+      withContext(Dispatchers.EDT) {
          synchronized(highlighter) {
             for (entry in highlighter) {
                val fileEditor = FileEditorManager.getInstance(project)
