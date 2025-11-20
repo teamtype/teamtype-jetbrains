@@ -151,14 +151,14 @@ class EthersyncServiceImpl(
 
    private fun launchDaemon(cmd: GeneralCommandLine) {
       val projectDirectory = File(project.basePath!!)
-      val ethersyncDirectory = File(projectDirectory, ".ethersync")
+      val ethersyncDirectory = File(projectDirectory, ".teamtype")
       cmd.workDirectory = projectDirectory
 
       cs.launch {
          shutdownImpl()
 
          if (!ethersyncDirectory.exists()) {
-            LOG.debug("Creating ethersync directory")
+            LOG.debug("Creating teamtype directory")
             val permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
             Files.createDirectory(ethersyncDirectory.toPath(), permissions);
          }
@@ -221,7 +221,7 @@ class EthersyncServiceImpl(
       }
 
       cs.launch {
-         LOG.info("Starting ethersync client")
+         LOG.info("Starting teamtype client")
          // TODO: try catch not existing binary
          val clientProcessBuilder = ProcessBuilder(AppSettings.getInstance().state.ethersyncBinaryPath, "client")
             .directory(projectDirectory)

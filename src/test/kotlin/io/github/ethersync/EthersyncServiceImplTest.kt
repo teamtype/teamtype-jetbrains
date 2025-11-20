@@ -28,10 +28,10 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
 
       daemonDir = Files.createTempDirectory("remote-project")
       val permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
-      Files.createDirectory(Path(daemonDir!!.toString(), ".ethersync"), permissions);
+      Files.createDirectory(Path(daemonDir!!.toString(), ".teamtype"), permissions);
 
       daemon = ProcessBuilder()
-         .command("ethersync", "share")
+         .command("teamtype", "share")
          .directory(daemonDir!!.toFile())
          .start()
 
@@ -43,9 +43,8 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
 
             if(line != null) {
                line = line.trim()
-
-               if (line.startsWith("ethersync join ")) {
-                  joinCode = line.substring(15)
+               if (line.startsWith("teamtype join ")) {
+                  joinCode = line.substring(14)
                   break
                }
             }
