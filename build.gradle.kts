@@ -4,25 +4,24 @@ plugins {
    id("java")
    // Do not upgrade until following has been fixed:
    // https://github.com/kotlin-community-tools/kotlin-language-server/pull/17
-   id("org.jetbrains.kotlin.jvm") version "2.0.21"
-   id("org.jetbrains.intellij.platform") version "2.2.1"
+   id("org.jetbrains.kotlin.jvm") version "2.3.0"
+   id("org.jetbrains.intellij.platform") version "2.10.1"
    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "io.github.ethersync"
+
 version = "0.7.0-SNAPSHOT"
 
 repositories {
    mavenCentral()
 
-   intellijPlatform {
-      defaultRepositories()
-   }
+   intellijPlatform { defaultRepositories() }
 }
 
 dependencies {
    intellijPlatform {
-      intellijIdeaCommunity("2024.3.1.1")
+      intellijIdea("2025.3.1.1")
       bundledPlugin("org.jetbrains.plugins.terminal")
 
       testFramework(TestFrameworkType.Platform)
@@ -37,16 +36,10 @@ dependencies {
    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
 
-kotlin {
-   compilerOptions {
-      jvmToolchain(21)
-   }
-}
+kotlin { compilerOptions { jvmToolchain(21) } }
 
 tasks {
-   patchPluginXml {
-      sinceBuild.set("243")
-   }
+   patchPluginXml { sinceBuild.set("243") }
 
    test {
       useJUnitPlatform {
