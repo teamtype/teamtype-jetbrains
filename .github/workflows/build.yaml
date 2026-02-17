@@ -27,6 +27,11 @@ jobs:
          - name: Execute Gradle build
            run: ./gradlew buildPlugin
 
+         - name: Run basic tests
+           run: |
+              ./gradlew test --info --rerun --tests EthersyncServiceImplTest.test01SyncChangesFromRemoteProjectToJetbrains
+              ./gradlew test --info --rerun --tests EthersyncServiceImplTest.test02SyncChangesFromJetbrainsToRemoteProject
+
          - name: Create nightly release
            id: create_release
            uses: softprops/action-gh-release@v2
