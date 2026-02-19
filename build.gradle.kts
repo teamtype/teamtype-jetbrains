@@ -6,6 +6,7 @@ plugins {
    // https://github.com/kotlin-community-tools/kotlin-language-server/pull/17
    id("org.jetbrains.kotlin.jvm") version "2.0.21"
    id("org.jetbrains.intellij.platform") version "2.2.1"
+   id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "io.github.ethersync"
