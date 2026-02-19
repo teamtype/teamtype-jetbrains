@@ -40,10 +40,4 @@ kotlin { compilerOptions { jvmToolchain(21) } }
 
 tasks {
    patchPluginXml { sinceBuild.set("243") }
-
-   test {
-      useJUnitPlatform {
-         includeEngines("junit-vintage")
-      }
-   }
 }

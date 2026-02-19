@@ -12,8 +12,8 @@ Testing is currently in the beginning and there is exists some issue in the
 `HeavyPlatfromTestCase` so one has to manually run tests in isolation:
 
 ```bash
-./gradlew test --info --rerun --tests EthersyncServiceImplTest.test01SyncChangesFromRemoteProjectToJetbrains
-./gradlew test --info --rerun --tests EthersyncServiceImplTest.test02SyncChangesFromJetbrainsToRemoteProject
+./gradlew test --rerun --tests EthersyncServiceImplTest.test01SyncChangesFromRemoteProjectToJetbrains
+./gradlew test --rerun --tests EthersyncServiceImplTest.test02SyncChangesFromJetbrainsToRemoteProject
 ```
 
 ## Install into existing IDE

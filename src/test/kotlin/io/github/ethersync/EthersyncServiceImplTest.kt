@@ -111,7 +111,7 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
 
       var text: String? = null
       runInEdtAndWait {
-         text = editor!!.editor.virtualFile.getDocument().text
+         text = editor!!.editor.virtualFile!!.getDocument().text
       }
 
       assertEquals("Hello from remote project" + System.lineSeparator(), text)
