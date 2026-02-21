@@ -28,6 +28,13 @@ Just open the project and use “Run Plugin” in the run drop down.
 
 ## Develop with Neovim
 
-- Make sure to enable [`kotlin_language_server` from nvim-lspconfig][nvim-kls].
+Make sure to enable [`kotlin_lsp` from nvim-lspconfig][nvim-kls] to use the
+official Kotlin language server.
 
-[nvim-kls]: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#kotlin_language_server
+> [!WARNING] Support for IntelliJ IDEA plugin development is not fully
+> implemented by the official Kotlin LSP yet, see
+> [#112](https://github.com/Kotlin/kotlin-lsp/issues/112), limiting the
+> completion capabilities of the LSP. For example, the Jetbrains imports cannot
+> be resolved.
+
+[nvim-kls]: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#kotlin_lsp

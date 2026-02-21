@@ -2,11 +2,9 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
    id("java")
-   // Do not upgrade until following has been fixed:
-   // https://github.com/kotlin-community-tools/kotlin-language-server/pull/17
-   id("org.jetbrains.kotlin.jvm") version "2.3.0"
-   id("org.jetbrains.intellij.platform") version "2.10.1"
-   id("com.adarshr.test-logger") version "4.0.0"
+   alias(libs.plugins.kotlin) // Kotlin support
+   alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
+   alias(libs.plugins.testLogger)
 }
 
 group = "io.github.ethersync"
@@ -27,17 +25,19 @@ dependencies {
       testFramework(TestFrameworkType.Platform)
    }
 
-   implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1")
-   implementation("org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.23.1")
+   implementation(libs.lsp4j)
+   implementation(libs.lsp4jJsonrpc)
 
-   testImplementation("junit:junit:4.13.2")
-   testImplementation("org.junit.jupiter:junit-jupiter-api:5.14.1")
-   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.1")
-   testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+   testImplementation(libs.junit)
+   testImplementation(libs.opentest4j)
 }
 
 kotlin { compilerOptions { jvmToolchain(21) } }
 
-tasks {
-   patchPluginXml { sinceBuild.set("243") }
+intellijPlatform {
+   pluginConfiguration {
+      ideaVersion {
+         sinceBuild = "234"
+      }
+   }
 }

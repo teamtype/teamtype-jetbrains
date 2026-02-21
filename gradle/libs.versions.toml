@@ -1,0 +1,20 @@
+[versions]
+junit = "4.13.2"
+lsp4j = "0.23.1"
+opentest4j = "1.3.0"
+
+intelliJPlatform = "2.11.0"
+kotlin = "2.3.0"
+testLogger = "4.0.0"
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
+lsp4jJsonrpc = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j.jsonrpc", version.ref = "lsp4j" }
+opentest4j = { group = "org.opentest4j", name = "opentest4j", version.ref = "opentest4j" }
+
+[plugins]
+intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+testLogger = { id = "com.adarshr.test-logger", version.ref = "testLogger" }
+
