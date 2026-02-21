@@ -12,12 +12,12 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.ui.JBColor
-import com.intellij.util.io.await
 import io.github.ethersync.protocol.CursorEvent
 import io.github.ethersync.protocol.CursorRequest
 import io.github.ethersync.protocol.RemoteEthersyncClientProtocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.lsp4j.Position
@@ -49,7 +49,7 @@ class Cursortracker(
       val editor = fileEditor.editor
 
       cs.launch {
-         withUiContext {
+         withContext(Dispatchers.EDT) {
             synchronized(highlighter) {
                val markupModel = editor.markupModel
 
