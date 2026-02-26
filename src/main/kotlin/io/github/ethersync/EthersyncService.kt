@@ -6,7 +6,7 @@ interface EthersyncService {
 
    fun start(joinCode: String?): Job
 
-   fun shutdown()
+   fun shutdown(): Job
 
    fun startWithCustomCommandLine(commandLine: String)
 }

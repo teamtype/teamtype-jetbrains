@@ -31,8 +31,6 @@ jobs:
               extract: true
 
          - name: Execute Gradle tests
-           # TODO: The tests must become independent
            run: |
               export PATH=$PATH:$(pwd)
-              ./gradlew test --rerun --tests EthersyncServiceImplTest.test01SyncChangesFromRemoteProjectToJetbrains
-              ./gradlew test --rerun --tests EthersyncServiceImplTest.test02SyncChangesFromJetbrainsToRemoteProject
+              ./gradlew test --rerun
