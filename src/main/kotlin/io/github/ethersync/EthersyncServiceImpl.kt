@@ -114,8 +114,8 @@ class EthersyncServiceImpl(
       })
    }
 
-   override fun shutdown() {
-      cs.launch {
+   override fun shutdown(): Job {
+      return cs.launch {
          shutdownImpl()
       }
    }

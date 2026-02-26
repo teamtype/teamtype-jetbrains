@@ -84,13 +84,14 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
 
       PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
 
+   }
+
+   fun testSyncChangesFromRemoteProjectToJetbrains() {
+      val dir = orCreateProjectBaseDir
+
       application.runWriteAction {
          dir.createFile("jetbrains.txt")
       }
-   }
-
-   fun test01SyncChangesFromRemoteProjectToJetbrains() {
-      val dir = orCreateProjectBaseDir
 
       var editor: TextEditor? = null
       runInEdtAndWait {
@@ -102,9 +103,16 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
             .firstOrNull { editor -> editor.file == file }!!
       }
 
-      val remoteProjectFile = Path(remoteProjectDir!!.toString(), "jetbrains.txt")
-      Files.write(remoteProjectFile, ("Hello from remote project" + System.lineSeparator()).toByteArray(), StandardOpenOption.CREATE);
+      // give teamtype and Intellij a bit time to perform the changes
+      val remoteFile = Path(remoteProjectDir!!.toString(), "jetbrains.txt")
+      while (!Files.exists(remoteFile)) {
+         Thread.sleep(100)
+         PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+      }
 
+      Files.write(remoteFile, ("Hello from remote project" + System.lineSeparator()).toByteArray(), StandardOpenOption.CREATE);
+
+      // TODO: is there another way to get notified when Intellij got a message from the daemon?
       // give teamtype and Intellij a bit time to perform the changes
       Thread.sleep(2_000)
       PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
@@ -117,12 +125,16 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
       assertEquals("Hello from remote project" + System.lineSeparator(), text)
    }
 
-   fun test02SyncChangesFromJetbrainsToRemoteProject() {
+   fun testSyncChangesFromJetbrainsToRemoteProject() {
       val dir = orCreateProjectBaseDir
+
+      application.runWriteAction {
+         dir.createFile("jetbrains-other.txt")
+      }
 
       var editor: TextEditor? = null
       runInEdtAndWait {
-         val file = dir.findOrCreateFile("jetbrains.txt")
+         val file = dir.findOrCreateFile("jetbrains-other.txt")
          FileEditorManager.getInstance(project).openFile(file)
          editor = FileEditorManager.getInstance(project)
             .allEditors
@@ -135,8 +147,14 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
          }
       }
 
-      val firstLine = Files.lines(Path(remoteProjectDir!!.toString(), "jetbrains.txt"))
-         .findFirst()
+      // give teamtype and Intellij a bit time to perform the changes
+      val remoteFile = Path(remoteProjectDir!!.toString(), "jetbrains-other.txt")
+      while (!Files.exists(remoteFile)) {
+         Thread.sleep(100)
+         PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+      }
+
+      val firstLine = Files.lines(remoteFile).findFirst()
       assertEquals(Optional.of("Hello from Jetbrains"), firstLine)
    }
 
@@ -149,7 +167,11 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
       }
 
       val service = project.service<EthersyncService>()
-      service.shutdown()
+      val notifier = service.shutdown()
+
+      runBlocking() {
+         notifier.join()
+      }
 
       remoteDaemon!!.destroy()
       remoteDaemon!!.waitFor()
