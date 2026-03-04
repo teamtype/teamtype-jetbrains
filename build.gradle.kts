@@ -7,9 +7,9 @@ plugins {
    alias(libs.plugins.testLogger)
 }
 
-group = "io.github.ethersync"
+group = "org.teamtype"
 
-version = "0.7.0-SNAPSHOT"
+version = "0.9.0-SNAPSHOT"
 
 repositories {
    mavenCentral()
