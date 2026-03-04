@@ -26,8 +26,6 @@ import com.intellij.util.io.awaitExit
 import com.intellij.util.io.readLineAsync
 import org.teamtype.protocol.*
 import org.teamtype.settings.AppSettings
-import org.teamtype.sync.Changetracker
-import org.teamtype.sync.Cursortracker
 import org.teamtype.ui.ToolWindow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -42,15 +40,15 @@ import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.concurrent.Executors
 
-private val LOG = logger<org.teamtype.EthersyncServiceImpl>()
+private val LOG = logger<org.teamtype.TeamtypeServiceImpl>()
 
 @Service(Service.Level.PROJECT)
-class EthersyncServiceImpl(
+class TeamtypeServiceImpl(
    private val project: Project,
    private val cs: CoroutineScope,
-) : org.teamtype.EthersyncService {
+) : org.teamtype.TeamtypeService {
 
-   private var launcher: Launcher<org.teamtype.protocol.RemoteEthersyncClientProtocol>? = null
+   private var launcher: Launcher<org.teamtype.protocol.RemoteTeamtypeClientProtocol>? = null
    private var daemonProcess: ColoredProcessHandler? = null
    private var clientProcess: Process? = null
 
@@ -139,7 +137,7 @@ class EthersyncServiceImpl(
    }
 
    override fun start(joinCode: String?): Job {
-      val cmd = GeneralCommandLine(AppSettings.getInstance().state.ethersyncBinaryPath)
+      val cmd = GeneralCommandLine(AppSettings.getInstance().state.teamtypeBinaryPath)
 
       if (joinCode == null || joinCode.trim().isEmpty()) {
          cmd.addParameter("share")
@@ -172,16 +170,16 @@ class EthersyncServiceImpl(
 
    private suspend fun launchDaemon(cmd: GeneralCommandLine, clientStarted: Channel<Unit>) {
       val projectDirectory = File(project.basePath!!)
-      val ethersyncDirectory = File(projectDirectory, ".teamtype")
+      val teamtypeDirectory = File(projectDirectory, ".teamtype")
       cmd.workDirectory = projectDirectory
 
       shutdownImpl()
 
-      if (!ethersyncDirectory.exists()) {
+      if (!teamtypeDirectory.exists()) {
          LOG.debug("Creating teamtype directory")
          val permissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
          withContext(Dispatchers.IO) {
-            Files.createDirectory(ethersyncDirectory.toPath(), permissions)
+            Files.createDirectory(teamtypeDirectory.toPath(), permissions)
          };
       }
 
@@ -194,11 +192,11 @@ class EthersyncServiceImpl(
       daemonProcess!!.addProcessListener(object : ProcessListener {
          override fun startNotified(event: ProcessEvent) {
             cs.launch {
-               val ethersyncSocket = File(ethersyncDirectory, "socket").toPath()
-               while (!Files.exists(ethersyncSocket)) {
+               val teamtypeSocket = File(teamtypeDirectory, "socket").toPath()
+               while (!Files.exists(teamtypeSocket)) {
                   Thread.sleep(100)
                }
-               launchEthersyncClient(projectDirectory, clientStarted)
+               launchTeamtypeClient(projectDirectory, clientStarted)
             }
          }
 
@@ -220,7 +218,7 @@ class EthersyncServiceImpl(
       val process = daemonProcess ?: return
 
       withContext(Dispatchers.EDT) {
-         val tw = ToolWindowManager.getInstance(project).getToolWindow("ethersync") ?: return@withContext
+         val tw = ToolWindowManager.getInstance(project).getToolWindow("teamtype") ?: return@withContext
 
          val daemon = tw.contentManager.findContent("Daemon") ?: return@withContext
          val toolWindow = daemon.component
@@ -232,9 +230,9 @@ class EthersyncServiceImpl(
       }
    }
 
-   private fun createProtocolHandler(): EthersyncEditorProtocol {
+   private fun createProtocolHandler(): TeamtypeEditorProtocol {
 
-      return object : EthersyncEditorProtocol {
+      return object : TeamtypeEditorProtocol {
          override fun cursor(cursorEvent: CursorEvent) {
             cursortracker.handleRemoteCursorEvent(cursorEvent)
          }
@@ -246,22 +244,22 @@ class EthersyncServiceImpl(
       }
    }
 
-   private suspend fun launchEthersyncClient(projectDirectory: File, clientStarted: Channel<Unit>) {
+   private suspend fun launchTeamtypeClient(projectDirectory: File, clientStarted: Channel<Unit>) {
       if (clientProcess != null) {
          return
       }
 
       LOG.info("Starting teamtype client")
       // TODO: try catch not existing binary
-      val clientProcessBuilder = ProcessBuilder(AppSettings.getInstance().state.ethersyncBinaryPath, "client")
+      val clientProcessBuilder = ProcessBuilder(AppSettings.getInstance().state.teamtypeBinaryPath, "client")
          .directory(projectDirectory)
       clientProcess = clientProcessBuilder.start()
       val clientProcess = clientProcess!!
 
-      val ethersyncEditorProtocol = createProtocolHandler()
+      val teamtypeEditorProtocol = createProtocolHandler()
       launcher = Launcher.createIoLauncher(
-         ethersyncEditorProtocol,
-         RemoteEthersyncClientProtocol::class.java,
+         teamtypeEditorProtocol,
+         RemoteTeamtypeClientProtocol::class.java,
          clientProcess.inputStream,
          clientProcess.outputStream,
          Executors.newCachedThreadPool(),

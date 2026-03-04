@@ -8,24 +8,24 @@ import javax.swing.JPanel
 class AppSettingsComponent {
 
    val panel: JPanel
-   private val ethersyncBinaryTF: JBTextField = JBTextField()
+   private val teamtypeBinaryTF: JBTextField = JBTextField()
 
    init {
        panel = FormBuilder.createFormBuilder()
-          .addLabeledComponent(JBLabel("Ethersync binary:"), ethersyncBinaryTF, 1, false)
+          .addLabeledComponent(JBLabel("Teamtype binary:"), teamtypeBinaryTF, 1, false)
           .addComponentFillVertically(JPanel(), 0)
           .panel
    }
 
-   var ethersyncBinary: String
+   var teamtypeBinary: String
       get() {
-         return if (ethersyncBinaryTF.text.isNullOrBlank()) {
-            "ethersync"
+         return if (teamtypeBinaryTF.text.isNullOrBlank()) {
+            "teamtype"
          } else {
-            ethersyncBinaryTF.text.toString()
+            teamtypeBinaryTF.text.toString()
          }
       }
       set(value) {
-         ethersyncBinaryTF.setText(value)
+         teamtypeBinaryTF.setText(value)
       }
 }

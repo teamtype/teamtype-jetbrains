@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.terminal.TerminalShellCommandHandler
 import org.teamtype.settings.AppSettings
 
-class StartEthersyncDaemonTerminalShellCommandHandler : TerminalShellCommandHandler {
+class StartTeamtypeDaemonTerminalShellCommandHandler : TerminalShellCommandHandler {
     override fun execute(
         project: Project,
         workingDirectory: String?,
@@ -14,8 +14,8 @@ class StartEthersyncDaemonTerminalShellCommandHandler : TerminalShellCommandHand
         command: String,
         executor: Executor
     ): Boolean {
-        val ethersyncService = project.service<EthersyncService>()
-        ethersyncService.startWithCustomCommandLine(command)
+        val teamtypeService = project.service<TeamtypeService>()
+        teamtypeService.startWithCustomCommandLine(command)
         return true
     }
 
@@ -27,13 +27,13 @@ class StartEthersyncDaemonTerminalShellCommandHandler : TerminalShellCommandHand
            return false
         }
 
-        val ethersyncBinary = AppSettings.getInstance().state.ethersyncBinaryPath
+        val teamtypeBinary = AppSettings.getInstance().state.teamtypeBinaryPath
 
-        if (!command.startsWith(ethersyncBinary)) {
+        if (!command.startsWith(teamtypeBinary)) {
             return false
         }
 
-        val rest = command.substring(ethersyncBinary.length).trim()
+        val rest = command.substring(teamtypeBinary.length).trim()
 
         return rest.startsWith("share") || rest.startsWith("join")
     }

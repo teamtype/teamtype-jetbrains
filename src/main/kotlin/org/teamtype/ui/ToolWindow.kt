@@ -8,8 +8,8 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import org.teamtype.StartEthersyncDaemonAction
-import org.teamtype.StopEthersyncDaemonAction
+import org.teamtype.StartTeamtypeDaemonAction
+import org.teamtype.StopTeamtypeDaemonAction
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
@@ -28,7 +28,7 @@ class ToolWindow(project: Project): JPanel() {
 
         val actionToolBar = ActionManager.getInstance().createActionToolbar("", object : ActionGroup() {
             override fun getChildren(p0: AnActionEvent?): Array<AnAction> {
-                return arrayOf(StartEthersyncDaemonAction(), StopEthersyncDaemonAction())
+                return arrayOf(StartTeamtypeDaemonAction(), StopTeamtypeDaemonAction())
             }
         }, true)
 

@@ -6,7 +6,7 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 
 
-class EthersyncToolWindowFactory : ToolWindowFactory {
+class TeamtypeToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val panel = org.teamtype.ui.ToolWindow(project)

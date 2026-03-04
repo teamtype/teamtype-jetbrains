@@ -15,22 +15,22 @@ class AppSettingsConfigurable : Configurable {
 
    override fun isModified(): Boolean {
       val state = AppSettings.getInstance().state
-      return state.ethersyncBinaryPath != compoment!!.ethersyncBinary
+      return state.teamtypeBinaryPath != compoment!!.teamtypeBinary
    }
 
    override fun apply() {
       val state = AppSettings.getInstance().state
-      state.ethersyncBinaryPath = compoment!!.ethersyncBinary
+      state.teamtypeBinaryPath = compoment!!.teamtypeBinary
    }
 
    @Nls(capitalization = Nls.Capitalization.Title)
    override fun getDisplayName(): String {
-      return "Ethersync"
+      return "Teamtype"
    }
 
    override fun reset() {
       val state = AppSettings.getInstance().state
-      compoment!!.ethersyncBinary = state.ethersyncBinaryPath
+      compoment!!.teamtypeBinary = state.teamtypeBinaryPath
    }
 
    override fun disposeUIResources() {

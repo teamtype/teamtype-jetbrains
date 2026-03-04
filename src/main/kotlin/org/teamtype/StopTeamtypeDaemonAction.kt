@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.components.service
 
-class StopEthersyncDaemonAction : AnAction("Stpo daemon", "Stop running ethersync daemon", AllIcons.Run.Stop) {
+class StopTeamtypeDaemonAction : AnAction("Stpo daemon", "Stop running teamtype daemon", AllIcons.Run.Stop) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val service = project.service<EthersyncService>()
+        val service = project.service<TeamtypeService>()
         service.shutdown()
     }
 }

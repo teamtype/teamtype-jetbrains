@@ -13,7 +13,7 @@ import com.intellij.openapi.project.Project
 import org.teamtype.protocol.Delta
 import org.teamtype.protocol.EditEvent
 import org.teamtype.protocol.EditRequest
-import org.teamtype.protocol.RemoteEthersyncClientProtocol
+import org.teamtype.protocol.RemoteTeamtypeClientProtocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
@@ -44,7 +44,7 @@ class Changetracker(
 
    private val revisions: HashMap<String, FileRevision> = HashMap()
 
-   var remoteProxy: RemoteEthersyncClientProtocol? = null
+   var remoteProxy: RemoteTeamtypeClientProtocol? = null
 
    override fun beforeDocumentChange(event: DocumentEvent) {
       if (ignoreChangeEvent.get()) {

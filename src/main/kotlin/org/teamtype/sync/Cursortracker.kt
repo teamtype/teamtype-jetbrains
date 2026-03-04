@@ -10,11 +10,10 @@ import com.intellij.openapi.editor.markup.*
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.ui.JBColor
 import org.teamtype.protocol.CursorEvent
 import org.teamtype.protocol.CursorRequest
-import org.teamtype.protocol.RemoteEthersyncClientProtocol
+import org.teamtype.protocol.RemoteTeamtypeClientProtocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
@@ -36,7 +35,7 @@ class Cursortracker(
    private data class Key(val documentUri: String, val user: String)
    private val highlighter = HashMap<Key, List<RangeHighlighter>>()
 
-   var remoteProxy: RemoteEthersyncClientProtocol? = null
+   var remoteProxy: RemoteTeamtypeClientProtocol? = null
 
    fun handleRemoteCursorEvent(cursorEvent: CursorEvent) {
       val fileEditor = FileEditorManager.getInstance(project)

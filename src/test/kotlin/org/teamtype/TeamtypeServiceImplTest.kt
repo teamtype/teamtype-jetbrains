@@ -21,7 +21,7 @@ import java.nio.file.attribute.PosixFilePermissions
 import java.util.*
 import kotlin.io.path.Path
 
-class EthersyncServiceImplTest : HeavyPlatformTestCase() {
+class TeamtypeServiceImplTest : HeavyPlatformTestCase() {
 
 
    /**
@@ -74,7 +74,7 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
 
       val dir = orCreateProjectBaseDir
 
-      val service = project.service<EthersyncServiceImpl>()
+      val service = project.service<TeamtypeServiceImpl>()
       service.attachDaemonOutputToUi = false
       val notifier = service.start(joinCode)
 
@@ -166,7 +166,7 @@ class EthersyncServiceImplTest : HeavyPlatformTestCase() {
          }
       }
 
-      val service = project.service<EthersyncService>()
+      val service = project.service<TeamtypeService>()
       val notifier = service.shutdown()
 
       runBlocking() {

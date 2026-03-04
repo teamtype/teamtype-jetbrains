@@ -2,7 +2,7 @@ package org.teamtype
 
 import kotlinx.coroutines.Job
 
-interface EthersyncService {
+interface TeamtypeService {
 
    fun start(joinCode: String?): Job
 

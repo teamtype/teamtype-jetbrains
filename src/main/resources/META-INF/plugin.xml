@@ -5,7 +5,7 @@
    <vendor url="https://teamtype.org">teamtype.org</vendor>
 
    <description><![CDATA[
-   Ethersync enables real-time co-editing of local text files. You can use it for pair programming or note-taking, for example! Think Google Docs, but from the comfort of your favorite text editor!
+   Teamtype enables real-time co-editing of local text files. You can use it for pair programming or note-taking, for example! Think Google Docs, but from the comfort of your favorite text editor!
    ]]></description>
 
    <depends>com.intellij.modules.platform</depends>
@@ -18,28 +18,28 @@
          parentId="tools"
          instance="org.teamtype.settings.AppSettingsConfigurable"
          id="org.teamtype.settings.AppSettingsConfigurable"
-         displayName="Ethersync"/>
+         displayName="Teamtype"/>
 
       <projectService
-         serviceInterface="org.teamtype.EthersyncService"
-         serviceImplementation="org.teamtype.EthersyncServiceImpl"/>
+         serviceInterface="org.teamtype.TeamtypeService"
+         serviceImplementation="org.teamtype.TeamtypeServiceImpl"/>
 
       <toolWindow
-           id="ethersync"
+           id="teamtype"
            icon="/toolbar.svg"
-           factoryClass="org.teamtype.ui.EthersyncToolWindowFactory"/>
+           factoryClass="org.teamtype.ui.TeamtypeToolWindowFactory"/>
 
       <terminal.shellCommandHandler
-           implementation="org.teamtype.StartEthersyncDaemonTerminalShellCommandHandler"/>
-      <iconMapper mappingFile="EthersyncIconMappings.json"/>
+           implementation="org.teamtype.StartTeamtypeDaemonTerminalShellCommandHandler"/>
+      <iconMapper mappingFile="TeamtypeIconMappings.json"/>
    </extensions>
 
    <actions>
       <action
-         id="StartEthersyncDaemon"
-         class="org.teamtype.StartEthersyncDaemonAction"
-         text="Code with Ethersync"
-         description="Connect to a running ethersync daemon or start a new peer"
+         id="StartTeamtypeDaemon"
+         class="org.teamtype.StartTeamtypeDaemonAction"
+         text="Code with Teamtype"
+         description="Connect to a running teamtype daemon or start a new peer"
          icon="/toolbar.svg">
          <add-to-group group-id="ToolsMenu" anchor="first"/>
       </action>

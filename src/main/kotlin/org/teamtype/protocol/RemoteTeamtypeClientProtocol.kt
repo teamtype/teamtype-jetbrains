@@ -5,7 +5,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import java.util.concurrent.CompletableFuture
 
-interface RemoteEthersyncClientProtocol {
+interface RemoteTeamtypeClientProtocol {
     @JsonRequest
     fun cursor(cursorRequest: CursorRequest): CompletableFuture<JsonObject>
 

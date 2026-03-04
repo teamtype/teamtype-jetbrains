@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NonNls
 
 @State(
    name = "org.teamtype.settings.AppSettings",
-   storages = [Storage("EthersyncSettingsPlugin.xml")]
+   storages = [Storage("TeamtypeSettingsPlugin.xml")]
 )
 class AppSettings : PersistentStateComponent<AppSettings.State> {
 
    data class State(
       @NonNls
-      var ethersyncBinaryPath: String = "teamtype"
+      var teamtypeBinaryPath: String = "teamtype"
    )
 
    private var state: State = State()
