@@ -1,8 +1,8 @@
 <idea-plugin>
-   <id>io.github.ethersync</id>
+   <id>org.teamtype</id>
 
-   <name>Ethersync</name>
-   <vendor url="https://ethersync.github.io/ethersync/">Ethersync GitHub Org</vendor>
+   <name>Teamtype</name>
+   <vendor url="https://teamtype.org">teamtype.org</vendor>
 
    <description><![CDATA[
    Ethersync enables real-time co-editing of local text files. You can use it for pair programming or note-taking, for example! Think Google Docs, but from the comfort of your favorite text editor!
@@ -13,31 +13,31 @@
 
    <extensions defaultExtensionNs="com.intellij">
       <applicationService
-         serviceImplementation="io.github.ethersync.settings.AppSettings"/>
+         serviceImplementation="org.teamtype.settings.AppSettings"/>
       <applicationConfigurable
          parentId="tools"
-         instance="io.github.ethersync.settings.AppSettingsConfigurable"
-         id="io.github.ethersync.settings.AppSettingsConfigurable"
+         instance="org.teamtype.settings.AppSettingsConfigurable"
+         id="org.teamtype.settings.AppSettingsConfigurable"
          displayName="Ethersync"/>
 
       <projectService
-         serviceInterface="io.github.ethersync.EthersyncService"
-         serviceImplementation="io.github.ethersync.EthersyncServiceImpl"/>
+         serviceInterface="org.teamtype.EthersyncService"
+         serviceImplementation="org.teamtype.EthersyncServiceImpl"/>
 
       <toolWindow
            id="ethersync"
            icon="/toolbar.svg"
-           factoryClass="io.github.ethersync.ui.EthersyncToolWindowFactory"/>
+           factoryClass="org.teamtype.ui.EthersyncToolWindowFactory"/>
 
       <terminal.shellCommandHandler
-           implementation="io.github.ethersync.StartEthersyncDaemonTerminalShellCommandHandler"/>
+           implementation="org.teamtype.StartEthersyncDaemonTerminalShellCommandHandler"/>
       <iconMapper mappingFile="EthersyncIconMappings.json"/>
    </extensions>
 
    <actions>
       <action
          id="StartEthersyncDaemon"
-         class="io.github.ethersync.StartEthersyncDaemonAction"
+         class="org.teamtype.StartEthersyncDaemonAction"
          text="Code with Ethersync"
          description="Connect to a running ethersync daemon or start a new peer"
          icon="/toolbar.svg">
