@@ -11,9 +11,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
-import org.teamtype.protocol.CursorEvent
-import org.teamtype.protocol.CursorRequest
-import org.teamtype.protocol.RemoteTeamtypeClientProtocol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
@@ -22,6 +19,9 @@ import kotlinx.coroutines.withContext
 import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.Range
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
+import org.teamtype.protocol.RemoteTeamtypeClientProtocol
+import org.teamtype.protocol.CursorEvent
+import org.teamtype.protocol.CursorRequest
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.util.*

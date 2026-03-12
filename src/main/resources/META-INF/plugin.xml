@@ -29,6 +29,9 @@
            icon="/toolbar.svg"
            factoryClass="org.teamtype.ui.TeamtypeToolWindowFactory"/>
 
+      <fileDocumentSynchronizationVetoer
+           implementation="org.teamtype.sync.FileDocumentSynchronizationAlwaysVetoer"/>
+
       <terminal.shellCommandHandler
            implementation="org.teamtype.StartTeamtypeDaemonTerminalShellCommandHandler"/>
       <iconMapper mappingFile="TeamtypeIconMappings.json"/>

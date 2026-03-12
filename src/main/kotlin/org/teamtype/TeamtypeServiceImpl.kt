@@ -1,5 +1,6 @@
 package org.teamtype
 
+import com.google.gson.JsonObject
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.process.ProcessEvent
@@ -7,9 +8,11 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.trace
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.fileEditor.FileDocumentSynchronizationVetoer
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.TextEditor
@@ -24,14 +27,28 @@ import com.intellij.util.io.BaseOutputReader
 import com.intellij.util.io.await
 import com.intellij.util.io.awaitExit
 import com.intellij.util.io.readLineAsync
-import org.teamtype.protocol.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
 import org.teamtype.settings.AppSettings
 import org.teamtype.ui.ToolWindow
-import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import org.eclipse.lsp4j.jsonrpc.Launcher
+import org.eclipse.lsp4j.jsonrpc.MessageConsumer
 import org.eclipse.lsp4j.jsonrpc.ResponseErrorException
+import org.teamtype.protocol.CursorEvent
+import org.teamtype.protocol.DocumentCloseRequest
+import org.teamtype.protocol.DocumentOpenRequest
+import org.teamtype.protocol.EditEvent
+import org.teamtype.protocol.RemoteTeamtypeClientProtocol
+import org.teamtype.protocol.TeamtypeEditorProtocol
+import org.teamtype.sync.Changetracker
+import org.teamtype.sync.Cursortracker
+import org.teamtype.sync.FileDocumentSynchronizationAlwaysVetoer
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -40,27 +57,31 @@ import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.concurrent.Executors
 
-private val LOG = logger<org.teamtype.TeamtypeServiceImpl>()
+private val LOG = logger<TeamtypeServiceImpl>()
 
 @Service(Service.Level.PROJECT)
 class TeamtypeServiceImpl(
    private val project: Project,
-   private val cs: CoroutineScope,
-) : org.teamtype.TeamtypeService {
+   private val cs: CoroutineScope
+) : TeamtypeService {
 
-   private var launcher: Launcher<org.teamtype.protocol.RemoteTeamtypeClientProtocol>? = null
+   private var launcher: Launcher<RemoteTeamtypeClientProtocol>? = null
    private var daemonProcess: ColoredProcessHandler? = null
    private var clientProcess: Process? = null
 
-   private val changetracker: org.teamtype.sync.Changetracker =
-       _root_ide_package_.org.teamtype.sync.Changetracker(project, cs)
-   private val cursortracker: org.teamtype.sync.Cursortracker =
-       _root_ide_package_.org.teamtype.sync.Cursortracker(project, cs)
+   private val changetracker: Changetracker = Changetracker(project, cs)
+   private val cursortracker: Cursortracker = Cursortracker(project, cs)
 
    /** test-only! */
    var attachDaemonOutputToUi: Boolean = true
 
+   private var vetoer: FileDocumentSynchronizationAlwaysVetoer
+
    init {
+      vetoer = FileDocumentSynchronizationVetoer.EP_NAME.extensionList
+         .filterIsInstance<FileDocumentSynchronizationAlwaysVetoer>()
+         .first();
+
       val bus = project.messageBus.connect()
       bus.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
          override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
@@ -172,6 +193,7 @@ class TeamtypeServiceImpl(
       val projectDirectory = File(project.basePath!!)
       val teamtypeDirectory = File(projectDirectory, ".teamtype")
       cmd.workDirectory = projectDirectory
+      cmd.environment["RUST_LOG"] = "teamtype=debug"
 
       shutdownImpl()
 
@@ -263,7 +285,14 @@ class TeamtypeServiceImpl(
          clientProcess.inputStream,
          clientProcess.outputStream,
          Executors.newCachedThreadPool(),
-         { c -> c },
+         { c ->
+            MessageConsumer { message ->
+               if (message != null) {
+                  LOG.trace { message.toString() }
+               }
+               c.consume(message)
+            }
+         },
          { _ -> run {} }
       )
 
@@ -302,21 +331,33 @@ class TeamtypeServiceImpl(
 
    fun launchDocumentCloseNotification(fileUri: String) {
       val launcher = launcher ?: return
-      cs.launch {
+      val job = cs.launch(context = Dispatchers.Unconfined) {
          launcher.remoteProxy.close(DocumentCloseRequest(fileUri))
-         changetracker.closeFile(fileUri)
       }
+      runBlocking {
+         job.join()
+      }
+      changetracker.closeFile(fileUri)
+      vetoer.unblock(fileUri)
    }
 
    fun launchDocumentOpenRequest(fileUri: String, content: String) {
       val launcher = launcher ?: return
-      cs.launch {
+      val job = cs.launch(context = Dispatchers.Unconfined) {
          try {
-            launcher.remoteProxy.open(DocumentOpenRequest(fileUri, content)).await()
+            val f = launcher.remoteProxy.open(DocumentOpenRequest(fileUri, content))
+            f.handle({ j: JsonObject, e: Throwable ->
+
+               println()
+            }).get()
          } catch (e: ResponseErrorException) {
             TODO("not yet implemented: notify about an protocol error")
          }
       }
+      runBlocking {
+         job.join()
+      }
+      vetoer.block(fileUri)
    }
 
 }
