@@ -1,0 +1,12 @@
+package org.teamtype.protocol
+
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
+
+interface TeamtypeEditorProtocol {
+
+   @JsonNotification
+   fun cursor(cursorEvent: CursorEvent)
+
+   @JsonNotification
+   fun edit(editEvent: EditEvent)
+}
