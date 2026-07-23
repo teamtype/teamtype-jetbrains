@@ -7,6 +7,8 @@ intelliJPlatform = "2.11.0"
 kotlin = "2.3.10"
 testLogger = "4.0.0"
 
+idea = "2026.1"
+
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }

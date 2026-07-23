@@ -345,11 +345,7 @@ class TeamtypeServiceImpl(
       val launcher = launcher ?: return
       val job = cs.launch(context = Dispatchers.Unconfined) {
          try {
-            val f = launcher.remoteProxy.open(DocumentOpenRequest(fileUri, content))
-            f.handle({ j: JsonObject, e: Throwable ->
-
-               println()
-            }).get()
+            launcher.remoteProxy.open(DocumentOpenRequest(fileUri, content)).await()
          } catch (e: ResponseErrorException) {
             TODO("not yet implemented: notify about an protocol error")
          }

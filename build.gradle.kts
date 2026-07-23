@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
    intellijPlatform {
-      intellijIdea("2025.3.1.1")
+      intellijIdea(libs.versions.idea)
       bundledPlugin("org.jetbrains.plugins.terminal")
 
       testFramework(TestFrameworkType.Platform)

@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.DocumentUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -70,7 +71,7 @@ class Changetracker(
       val start = editor.offsetToLogicalPosition(event.offset)
       val end = editor.offsetToLogicalPosition(event.offset + event.oldLength)
 
-      launchEditRequest(
+      val job = launchEditRequest(
          EditRequest(
             uri, rev.daemon, Collections.singletonList(
                Delta(
@@ -83,6 +84,9 @@ class Changetracker(
             )
          )
       )
+      runBlocking {
+         job.join()
+      }
    }
 
    fun handleRemoteEditEvent(editEvent: EditEvent) {
@@ -138,11 +142,13 @@ class Changetracker(
       revisions.clear()
    }
 
-   private fun launchEditRequest(editRequest: EditRequest) {
-      val remoteProxy = remoteProxy ?: return
-      cs.launch {
+   private fun launchEditRequest(editRequest: EditRequest): Job {
+      if (remoteProxy == null) {
+         TODO()
+      }
+      return cs.launch {
          try {
-            remoteProxy.edit(editRequest).await()
+            remoteProxy!!.edit(editRequest).await()
          } catch (e: ResponseErrorException) {
             TODO("not yet implemented: notify about an protocol error")
          }
